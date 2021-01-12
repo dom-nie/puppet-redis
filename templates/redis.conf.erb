@@ -713,7 +713,7 @@ hll-sparse-max-bytes <%= @hll_sparse_max_bytes %>
 #
 # use "activerehashing yes" if you don't have such hard requirements but
 # want to free memory asap when possible.
-activerehashing <% if @activerehashing -%>yes<% else -%>no<% end -%>
+activerehashing <%= @activerehashing ? 'yes' : 'no' %>
 
 # The client output buffer limits can be used to force disconnection of clients
 # that are not reading data from the server fast enough for some reason (a
@@ -773,7 +773,7 @@ hz <%= @hz %>
 # the file will be fsync-ed every 32 MB of data generated. This is useful
 # in order to commit the file to the disk more incrementally and avoid
 # big latency spikes.
-aof-rewrite-incremental-fsync <% if @aof_rewrite_incremental_fsync -%>yes<% else -%>no<% end -%>
+aof-rewrite-incremental-fsync <%= @aof_rewrite_incremental_fsync ? 'yes' : 'no' %>
 
 # Redis Cluster Settings
 <% if @cluster_enabled -%>
