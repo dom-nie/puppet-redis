@@ -43,8 +43,8 @@ describe 'redis' do
 
         it do
           is_expected.to contain_service(service_name).with(
-            'ensure'     => 'running',
-            'enable'     => 'true',
+            'ensure' => 'running',
+            'enable' => 'true',
           )
         end
 
@@ -80,10 +80,10 @@ describe 'redis' do
         it { is_expected.to compile.with_all_deps }
         it do
           is_expected.to contain_file('/etc/security/limits.d/redis.conf').with(
-            'ensure'  => 'file',
-            'owner'   => 'root',
-            'group'   => 'root',
-            'mode'    => '0644',
+            'ensure' => 'file',
+            'owner' => 'root',
+            'group' => 'root',
+            'mode' => '0644',
             'content' => "redis soft nofile 65536\nredis hard nofile 65536\n"
           )
         end
@@ -94,10 +94,10 @@ describe 'redis' do
           it { is_expected.to compile.with_all_deps }
           it do
             is_expected.to contain_file('/etc/security/limits.d/redis.conf').with(
-              'ensure'  => 'file',
-              'owner'   => 'root',
-              'group'   => 'root',
-              'mode'    => '0644',
+              'ensure' => 'file',
+              'owner' => 'root',
+              'group' => 'root',
+              'mode' => '0644',
               'content' => "redis soft nofile 65536\nredis hard nofile 65536\n"
             )
           end
@@ -678,11 +678,7 @@ describe 'redis' do
         end
 
         it do
-          if facts[:operatingsystem] == 'Ubuntu' && facts[:operatingsystemmajrelease] == '16.04'
-            is_expected.not_to contain_file(config_file_orig).with_content(%r{protected-mode})
-          else
-            is_expected.to contain_file(config_file_orig).with_content(%r{^protected-mode no$})
-          end
+          is_expected.to contain_file(config_file_orig).with_content(%r{^protected-mode no$})
         end
       end
 
@@ -1229,7 +1225,7 @@ describe 'redis' do
 
         it {
           is_expected.not_to contain_file(config_file_orig).with(
-            'content' => %r{cluster-enabled}
+            'content' => %r{^cluster-enabled.*yes}
           )
         }
       end
@@ -1243,7 +1239,7 @@ describe 'redis' do
 
         it {
           is_expected.to contain_file(config_file_orig).with(
-            'content' => %r{cluster-enabled.*yes}
+            'content' => %r{^cluster-enabled.*yes}
           )
         }
       end

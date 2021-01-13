@@ -522,7 +522,7 @@ repl-diskless-load disabled
 # value is 10 seconds.
 #
 # repl-ping-replica-period 10
-repl-ping-replica-period <%= @repl_ping_slave_period %>
+repl-ping-slave-period <%= @repl_ping_slave_period %>
 # The following option sets the replication timeout for:
 #
 # 1) Bulk transfer I/O during SYNC, from the point of view of replica.
@@ -592,7 +592,7 @@ repl-backlog-ttl <%= @repl_backlog_ttl %>
 # Redis Sentinel for promotion.
 #
 # By default the priority is 100.
-replica-priority <%= @slave_priority %>
+slave-priority <%= @slave_priority %>
 
 # It is possible for a master to stop accepting writes if there are less than
 # N replicas connected, having a lag less or equal than M seconds.
@@ -615,8 +615,8 @@ replica-priority <%= @slave_priority %>
 #
 # By default min-replicas-to-write is set to 0 (feature disabled) and
 # min-replicas-max-lag is set to 10.
-min-replicas-to-write <%= @min_slaves_to_write %>
-min-replicas-max-lag <%= @min_slaves_max_lag %>
+min-slaves-to-write <%= @min_slaves_to_write %>
+min-slaves-max-lag <%= @min_slaves_max_lag %>
 
 # A Redis master is able to list the address and port of the attached
 # replicas in different ways. For example the "INFO replication" section
@@ -1587,6 +1587,8 @@ hash-max-ziplist-value <%= @hash_max_ziplist_value %>
 # The highest performing option is usually -2 (8 Kb size) or -1 (4 Kb size),
 # but if your use case is unique, adjust the settings as necessary.
 list-max-ziplist-size -2
+list-max-ziplist-entries <%= @list_max_ziplist_entries %>
+list-max-ziplist-value <%= @list_max_ziplist_value %>
 
 # Lists may also be compressed.
 # Compress depth is the number of quicklist ziplist nodes from *each* side of
@@ -1696,7 +1698,7 @@ activerehashing <%= @activerehashing ? 'yes' : 'no' %>
 #
 # Both the hard or the soft limit can be disabled by setting them to zero.
 client-output-buffer-limit normal 0 0 0
-client-output-buffer-limit replica <%= @output_buffer_limit_slave %>
+client-output-buffer-limit slave <%= @output_buffer_limit_slave %>
 client-output-buffer-limit pubsub <%= @output_buffer_limit_pubsub %>
 
 # Client query buffers accumulate new commands. They are limited to a fixed
