@@ -36,7 +36,7 @@
 # include /path/to/other.conf
 
 <% if @extra_config_file -%>
-  include <%= @extra_config_file %>
+include <%= @extra_config_file %>
 <% end -%>
 
 ################################## MODULES #####################################
@@ -318,6 +318,8 @@ always-show-logo yes
 <%- @save_db_to_disk_interval.sort_by{|k,v|k}.each do |seconds, key_change| -%>
 save <%= seconds -%> <%= key_change -%> <%= "\n" -%>
 <%- end -%>
+<% else %>
+save ""
 <% end %>
 
 # By default Redis will stop accepting writes if RDB snapshots are enabled
@@ -407,6 +409,7 @@ dir <%= @workdir %>
 #
 # masterauth <master-password>
 <% if @masterauth -%>masterauth <%= @masterauth %><% end -%>
+
 #
 # However this is not enough if you are using Redis ACLs (for Redis version
 # 6 or greater), and the default user is not capable of running the PSYNC
@@ -432,7 +435,7 @@ dir <%= @workdir %>
 #    UNSUBSCRIBE, PSUBSCRIBE, PUNSUBSCRIBE, PUBLISH, PUBSUB, COMMAND, POST,
 #    HOST and LATENCY.
 #
-slave-serve-stale-data <%= @slave_serve_stale_data ? 'yes' : 'no' %>
+replica-serve-stale-data <%= @slave_serve_stale_data ? 'yes' : 'no' %>
 
 # You can configure a replica instance to accept writes or not. Writing against
 # a replica instance may be useful to store some ephemeral data (because data
@@ -448,7 +451,7 @@ slave-serve-stale-data <%= @slave_serve_stale_data ? 'yes' : 'no' %>
 # such as CONFIG, DEBUG, and so forth. To a limited extent you can improve
 # security of read only replicas using 'rename-command' to shadow all the
 # administrative / dangerous commands.
-slave-read-only <%= @slave_read_only ? 'yes' : 'no' %>
+replica-read-only <%= @slave_read_only ? 'yes' : 'no' %>
 
 # Replication SYNC strategy: disk or socket.
 #
@@ -522,7 +525,7 @@ repl-diskless-load disabled
 # value is 10 seconds.
 #
 # repl-ping-replica-period 10
-repl-ping-slave-period <%= @repl_ping_slave_period %>
+repl-ping-replica-period <%= @repl_ping_slave_period %>
 # The following option sets the replication timeout for:
 #
 # 1) Bulk transfer I/O during SYNC, from the point of view of replica.
@@ -592,7 +595,7 @@ repl-backlog-ttl <%= @repl_backlog_ttl %>
 # Redis Sentinel for promotion.
 #
 # By default the priority is 100.
-slave-priority <%= @slave_priority %>
+replica-priority <%= @slave_priority %>
 
 # It is possible for a master to stop accepting writes if there are less than
 # N replicas connected, having a lag less or equal than M seconds.
@@ -615,8 +618,8 @@ slave-priority <%= @slave_priority %>
 #
 # By default min-replicas-to-write is set to 0 (feature disabled) and
 # min-replicas-max-lag is set to 10.
-min-slaves-to-write <%= @min_slaves_to_write %>
-min-slaves-max-lag <%= @min_slaves_max_lag %>
+min-replicas-to-write <%= @min_slaves_to_write %>
+min-replicas-max-lag <%= @min_slaves_max_lag %>
 
 # A Redis master is able to list the address and port of the attached
 # replicas in different ways. For example the "INFO replication" section
@@ -833,6 +836,10 @@ acllog-max-len 128
 # Please note that changing the name of commands that are logged into the
 # AOF file or transmitted to replicas may cause problems.
 
+<% @rename_commands.each do |from,to| -%>
+rename-command <%= from %> <%= to %>
+<% end -%>
+
 ################################### CLIENTS ####################################
 
 # Set the max number of connected clients at the same time. By default
@@ -1042,7 +1049,7 @@ lazyfree-lazy-user-del no
 # enable I/O threads use the following configuration directive:
 #
 # io-threads 4
-io-threads <%= @processorcount %>
+io-threads <%= @io_threads %>
 #
 # Setting io-threads to 1 will just use the main thread as usual.
 # When I/O threads are enabled, we only use threads for writes, that is
@@ -1063,6 +1070,7 @@ io-threads <%= @processorcount %>
 # sure you also run the benchmark itself in threaded mode, using the
 # --threads option to match the number of Redis threads, otherwise you'll not
 # be able to notice the improvements.
+io-threads-do-reads <%= @io_threads_do_reads ? 'yes' : 'no' %>
 
 ############################ KERNEL OOM CONTROL ##############################
 
@@ -1187,7 +1195,7 @@ no-appendfsync-on-rewrite <%= @no_appendfsync_on_rewrite ? 'yes' : 'no' %>
 # rewrite feature.
 
 auto-aof-rewrite-percentage <%= @auto_aof_rewrite_percentage %>
-auto-aof-rewrite-min-size   <%= @auto_aof_rewrite_min_size %>
+auto-aof-rewrite-min-size <%= @auto_aof_rewrite_min_size %>
 
 # An AOF file may be found to be truncated at the end during the Redis
 # startup process, when the AOF data gets loaded back into memory.
@@ -1374,9 +1382,11 @@ lua-time-limit 5000
 cluster-enabled yes
 cluster-config-file <%= @cluster_config_file %>
 cluster-node-timeout <%= @cluster_node_timeout %>
-cluster-slave-validity-factor <%= @cluster_slave_validity_factor %>
+cluster-replica-validity-factor <%= @cluster_slave_validity_factor %>
 cluster-require-full-coverage <% if @cluster_require_full_coverage -%>yes<% else -%>no<% end %>
 cluster-migration-barrier <%= @cluster_migration_barrier %>
+cluster-allow-reads-when-down <% if @cluster_allow_reads_when_down -%>yes<% else -%>no<% end %>
+cluster-replica-no-failover <% if @cluster_replica_no_failover -%>yes<% else -%>no<% end %>
 <% end -%>
 
 ########################## CLUSTER DOCKER/NAT support  ########################
@@ -1698,7 +1708,7 @@ activerehashing <%= @activerehashing ? 'yes' : 'no' %>
 #
 # Both the hard or the soft limit can be disabled by setting them to zero.
 client-output-buffer-limit normal 0 0 0
-client-output-buffer-limit slave <%= @output_buffer_limit_slave %>
+client-output-buffer-limit replica <%= @output_buffer_limit_slave %>
 client-output-buffer-limit pubsub <%= @output_buffer_limit_pubsub %>
 
 # Client query buffers accumulate new commands. They are limited to a fixed
@@ -1746,7 +1756,7 @@ hz <%= @hz %>
 # used as needed once more clients are connected. In this way an idle
 # instance will use very little CPU time while a busy instance will be
 # more responsive.
-dynamic-hz yes
+dynamic-hz <%= @dynamic_hz ? 'yes' : 'no' %>
 
 # When a child rewrites the AOF file, if the following option is enabled
 # the file will be fsync-ed every 32 MB of data generated. This is useful
@@ -1758,7 +1768,7 @@ aof-rewrite-incremental-fsync <%= @aof_rewrite_incremental_fsync ? 'yes' : 'no' 
 # the file will be fsync-ed every 32 MB of data generated. This is useful
 # in order to commit the file to the disk more incrementally and avoid
 # big latency spikes.
-rdb-save-incremental-fsync yes
+rdb-save-incremental-fsync <%= @rdb_save_incremental_fsync ? 'yes' : 'no' %>
 
 # Redis LFU eviction (see maxmemory setting) can be tuned. However it is a good
 # idea to start with the default settings and only change them after investigating
@@ -1854,30 +1864,49 @@ rdb-save-incremental-fsync yes
 
 # Enabled active defragmentation
 # activedefrag no
+activedefrag <%= @activedefrag ? 'yes' : 'no' %>
 
 # Minimum amount of fragmentation waste to start active defrag
 # active-defrag-ignore-bytes 100mb
+<% if @activedefrag -%>
+active-defrag-ignore-bytes <%= @active_defrag_ignore_bytes %>
+<% end %>
 
 # Minimum percentage of fragmentation to start active defrag
 # active-defrag-threshold-lower 10
+<% if @activedefrag -%>
+active-defrag-threshold-lower <%= @active_defrag_threshold_lower %>
+<% end %>
 
 # Maximum percentage of fragmentation at which we use maximum effort
 # active-defrag-threshold-upper 100
+<% if @activedefrag -%>
+active-defrag-threshold-upper <%= @active_defrag_threshold_upper %>
+<% end %>
 
 # Minimal effort for defrag in CPU percentage, to be used when the lower
 # threshold is reached
 # active-defrag-cycle-min 1
+<% if @activedefrag -%>
+active-defrag-cycle-min <%= @active_defrag_cycle_min %>
+<% end %>
 
 # Maximal effort for defrag in CPU percentage, to be used when the upper
 # threshold is reached
 # active-defrag-cycle-max 25
+<% if @activedefrag -%>
+active-defrag-cycle-max <%= @active_defrag_cycle_max %>
+<% end %>
 
 # Maximum number of set/hash/zset/list fields that will be processed from
 # the main dictionary scan
 # active-defrag-max-scan-fields 1000
+<% if @activedefrag -%>
+active-defrag-max-scan-fields <%= @active_defrag_max_scan_fields %>
+<% end %>
 
 # Jemalloc background thread for purging will be enabled by default
-jemalloc-bg-thread yes
+jemalloc-bg-thread <%= @jemalloc_bg_thread ? 'yes' : 'no' %>
 
 # It is possible to pin different threads and processes of Redis to specific
 # CPUs in your system, in order to maximize the performances of the server.

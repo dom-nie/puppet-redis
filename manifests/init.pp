@@ -226,6 +226,47 @@
 #   Only set if cluster_enabled is true
 # @param instances
 #   Iterate through multiple instance configurations
+# @param io_threads
+#   Number of threads to handle IO operations in Redis
+# @param io_threads_do_reads
+#   Enabled/disable io_threads to handle reads
+# @param cluster_allow_reads_when_down
+#   Allows nodes to serve read data while cluster status is down
+# @param cluster_replica_no_failover
+#   Disabled automatic failover for replica
+# @param dynamic_hz
+#   When dynamic HZ is enabled, the actual configured HZ will be used
+#   as a baseline, but multiples of the configured HZ value will be actually
+#   used as needed once more clients are connected.
+# @param activedefrag
+#   Enable/disable active defragmentation
+# @param active_defrag_ignore_bytes
+#   Minimum amount of fragmentation waste to start active defrag
+#   Only set if activedefrag is true
+# @param active_defrag_threshold_lower
+#   Minimum percentage of fragmentation to start active defrag
+#   Only set if activedefrag is true
+# @param active_defrag_threshold_upper
+#   Maximum percentage of fragmentation at which we use maximum effort
+#   Only set if activedefrag is true
+# @param active_defrag_cycle_min
+#   Minimal effort for defrag in CPU percentage, to be used when the lower
+#   threshold is reached
+#   Only set if activedefrag is true
+# @param active_defrag_cycle_max
+#   Maximal effort for defrag in CPU percentage, to be used when the upper
+#   threshold is reached
+#   Only set if activedefrag is true
+# @param active_defrag_max_scan_fields
+#   Maximum number of set/hash/zset/list fields that will be processed from
+#   the main dictionary scan
+#   Only set if activedefrag is true
+# @param jemalloc_bg_thread
+#   Jemalloc background thread for purging will be enabled by default
+# @param rdb_save_incremental_fsync
+#   When redis saves RDB file, if the following option is enabled
+#   the file will be fsync-ed every 32 MB of data generated.
+
 class redis (
   Boolean $activerehashing                                       = true,
   Boolean $aof_load_truncated                                    = true,
@@ -238,7 +279,7 @@ class redis (
   Variant[Stdlib::IP::Address, Array[Stdlib::IP::Address]] $bind = ['127.0.0.1'],
   String[1] $output_buffer_limit_slave                           = '256mb 64mb 60',
   String[1] $output_buffer_limit_pubsub                          = '32mb 8mb 60',
-  String[1] $conf_template                                       = 'redis/redis6.conf.erb',
+  String[1] $conf_template                                       = 'redis/redis.conf.erb',
   Stdlib::Absolutepath $config_dir                               = $redis::params::config_dir,
   Stdlib::Filemode $config_dir_mode                              = $redis::params::config_dir_mode,
   Stdlib::Absolutepath $config_file                              = $redis::params::config_file,
@@ -326,6 +367,21 @@ class redis (
   Boolean $cluster_require_full_coverage                         = true,
   Integer[0] $cluster_migration_barrier                          = 1,
   Hash[String[1], Hash] $instances                               = {},
+  Integer[1] $io_threads = $facts['processors']['count'],
+  Boolean $io_threads_do_reads = false,
+  Boolean $cluster_allow_reads_when_down = false,
+  Boolean $cluster_replica_no_failover = false,
+  Boolean $dynamic_hz = true,
+  Boolean $activedefrag = false,
+  String[1] $active_defrag_ignore_bytes = '100mb',
+  Integer[1,100] $active_defrag_threshold_lower = 10,
+  Integer[1,100] $active_defrag_threshold_upper = 100,
+  Integer[1,100] $active_defrag_cycle_min = 1,
+  Integer[1,100] $active_defrag_cycle_max = 100,
+  Integer[1] $active_defrag_max_scan_fields = 1000,
+  Boolean $jemalloc_bg_thread = true,
+  Boolean $rdb_save_incremental_fsync = true,
+
 ) inherits redis::params {
   if $package_ensure =~ /^([0-9]+:)?[0-9]+\.[0-9]/ {
     if ':' in $package_ensure {
