@@ -535,13 +535,13 @@ describe 'redis' do
       describe 'with parameter maxmemory_policy' do
         let(:params) do
           {
-            maxmemory_policy: '_VALUE_'
+            maxmemory_policy: 'noeviction'
           }
         end
 
         it {
           is_expected.to contain_file(config_file_orig).with(
-            'content' => %r{maxmemory-policy.*_VALUE_}
+            'content' => %r{maxmemory-policy.*noeviction}
           )
         }
       end
@@ -549,13 +549,13 @@ describe 'redis' do
       describe 'with parameter maxmemory_samples' do
         let(:params) do
           {
-            maxmemory_samples: '_VALUE_'
+            maxmemory_samples: 9
           }
         end
 
         it {
           is_expected.to contain_file(config_file_orig).with(
-            'content' => %r{maxmemory-samples.*_VALUE_}
+            'content' => %r{maxmemory-samples.*9}
           )
         }
       end
@@ -1527,7 +1527,7 @@ describe 'redis' do
       describe 'test daemonize for redis6 config' do
         let(:params) do
           {
-            daemonize: true ,
+            daemonize: true,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -1542,7 +1542,7 @@ describe 'redis' do
       describe 'test pidfile for redis6 config' do
         let(:params) do
           {
-            pid_file: '/tmp/redis6.pid' ,
+            pid_file: '/tmp/redis6.pid',
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -1557,7 +1557,7 @@ describe 'redis' do
       describe 'test loglevel for redis6 config' do
         let(:params) do
           {
-            log_level: 'debug' ,
+            log_level: 'debug',
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -1572,7 +1572,7 @@ describe 'redis' do
       describe 'test logfile for redis6 config' do
         let(:params) do
           {
-            log_file: '/tmp/redis6.log' ,
+            log_file: '/tmp/redis6.log',
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -1587,7 +1587,7 @@ describe 'redis' do
       describe 'test syslog-enabled for redis6 config' do
         let(:params) do
           {
-            syslog_enabled: true ,
+            syslog_enabled: true,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -1602,7 +1602,7 @@ describe 'redis' do
       describe 'test syslog-facility for redis6 config' do
         let(:params) do
           {
-            syslog_facility: 'local7' ,
+            syslog_facility: 'local7',
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -1663,7 +1663,7 @@ describe 'redis' do
       describe 'test stop-writes-on-bgsave-error for redis6 config' do
         let(:params) do
           {
-            stop_writes_on_bgsave_error: true ,
+            stop_writes_on_bgsave_error: true,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -1678,7 +1678,7 @@ describe 'redis' do
       describe 'test rdbcompression for redis6 config' do
         let(:params) do
           {
-            rdbcompression: true ,
+            rdbcompression: true,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -1753,7 +1753,7 @@ describe 'redis' do
       describe 'test replica-serve-stale-data for redis6 config' do
         let(:params) do
           {
-            slave_serve_stale_data: true ,
+            slave_serve_stale_data: true,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -1768,7 +1768,7 @@ describe 'redis' do
       describe 'test replica-read-only for redis6 config' do
         let(:params) do
           {
-            slave_serve_stale_data: true ,
+            slave_serve_stale_data: true,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -1828,7 +1828,7 @@ describe 'redis' do
       describe 'test repl-disable-tcp-nodelay for redis6 config' do
         let(:params) do
           {
-            repl_disable_tcp_nodelay: true ,
+            repl_disable_tcp_nodelay: true,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -1948,7 +1948,7 @@ describe 'redis' do
       describe 'test rename-command for redis6 config' do
         let(:params) do
           {
-            rename_commands: {'CONFIG':'J29CONFIG'},
+            rename_commands: { 'CONFIG': 'J29CONFIG' },
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2008,14 +2008,14 @@ describe 'redis' do
       describe 'test maxmemory-samples for redis6 config' do
         let(:params) do
           {
-            maxmemory_samples: 1129,
+            maxmemory_samples: 9,
             conf_template: "redis/redis6.conf.erb"
           }
         end
 
         it {
           is_expected.to contain_file(config_file_orig).with(
-            'content' => %r{^maxmemory-samples 1129$}
+            'content' => %r{^maxmemory-samples 9$}
           )
         }
       end
@@ -2023,7 +2023,7 @@ describe 'redis' do
       describe 'test appendonly for redis6 config' do
         let(:params) do
           {
-            appendonly: true ,
+            appendonly: true,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2038,7 +2038,7 @@ describe 'redis' do
       describe 'test appendfilename for redis6 config' do
         let(:params) do
           {
-            appendfilename: 'appendonly6378.aof' ,
+            appendfilename: 'appendonly6378.aof',
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2053,7 +2053,7 @@ describe 'redis' do
       describe 'test appendfsync for redis6 config' do
         let(:params) do
           {
-            appendfsync: 'no' ,
+            appendfsync: 'no',
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2068,7 +2068,7 @@ describe 'redis' do
       describe 'test no-appendfsync-on-rewrite for redis6 config' do
         let(:params) do
           {
-            no_appendfsync_on_rewrite: true ,
+            no_appendfsync_on_rewrite: true,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2113,7 +2113,7 @@ describe 'redis' do
       describe 'test aof-load-truncated for redis6 config' do
         let(:params) do
           {
-            aof_load_truncated: true ,
+            aof_load_truncated: true,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2128,7 +2128,7 @@ describe 'redis' do
       describe 'test cluster mode for redis6 config' do
         let(:params) do
           {
-            cluster_enabled: true ,
+            cluster_enabled: true,
             cluster_config_file: 'nodes6.conf',
             cluster_node_timeout: 10001,
             cluster_slave_validity_factor: 1,
@@ -2190,7 +2190,7 @@ describe 'redis' do
       describe 'test slowlog-log-slower-than for redis6 config' do
         let(:params) do
           {
-            slowlog_log_slower_than: 1000 ,
+            slowlog_log_slower_than: 1000,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2205,7 +2205,7 @@ describe 'redis' do
       describe 'test slowlog-max-len for redis6 config' do
         let(:params) do
           {
-            slowlog_max_len: 112 ,
+            slowlog_max_len: 112,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2220,7 +2220,7 @@ describe 'redis' do
       describe 'test latency-monitor-threshold for redis6 config' do
         let(:params) do
           {
-            latency_monitor_threshold: 509 ,
+            latency_monitor_threshold: 509,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2235,7 +2235,7 @@ describe 'redis' do
       describe 'test notify-keyspace-events for redis6 config' do
         let(:params) do
           {
-            notify_keyspace_events: 'Ex' ,
+            notify_keyspace_events: 'Ex',
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2370,7 +2370,7 @@ describe 'redis' do
       describe 'test activerehashing for redis6 config' do
         let(:params) do
           {
-            activerehashing: true ,
+            activerehashing: true,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2385,7 +2385,7 @@ describe 'redis' do
       describe 'test client-output-buffer-limit replica for redis6 config' do
         let(:params) do
           {
-            output_buffer_limit_slave: '251mb 63mb 59' ,
+            output_buffer_limit_slave: '251mb 63mb 59',
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2400,7 +2400,7 @@ describe 'redis' do
       describe 'test client-output-buffer-limit pubsub for redis6 config' do
         let(:params) do
           {
-            output_buffer_limit_pubsub: '253mb 61mb 57' ,
+            output_buffer_limit_pubsub: '253mb 61mb 57',
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2415,7 +2415,7 @@ describe 'redis' do
       describe 'test hz for redis6 config' do
         let(:params) do
           {
-            hz: 314 ,
+            hz: 314,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2430,7 +2430,7 @@ describe 'redis' do
       describe 'test aof-rewrite-incremental-fsync for redis6 config' do
         let(:params) do
           {
-            aof_rewrite_incremental_fsync: true ,
+            aof_rewrite_incremental_fsync: true,
             conf_template: "redis/redis6.conf.erb"
           }
         end
@@ -2520,7 +2520,7 @@ describe 'redis' do
       describe 'test activedefrag configuration for redis6 config' do
         let(:params) do
           {
-            activedefrag: true ,
+            activedefrag: true,
             active_defrag_ignore_bytes: '200mb',
             active_defrag_threshold_lower: 11,
             active_defrag_threshold_upper: 99,
@@ -2586,7 +2586,6 @@ describe 'redis' do
           )
         }
       end
-
 
     end
   end

@@ -1,4 +1,4 @@
-FROM ruby:2.5.3
+FROM ruby:2.7
 
 WORKDIR /opt/puppet
 
@@ -6,7 +6,7 @@ WORKDIR /opt/puppet
 RUN mkdir -p /etc/sv
 
 ARG PUPPET_VERSION="~> 6.0"
-ARG PARALLEL_TEST_PROCESSORS=4
+ARG PARALLEL_TEST_PROCESSORS=16
 
 # Cache gems
 COPY Gemfile .
